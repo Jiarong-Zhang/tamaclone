@@ -13,3 +13,6 @@ goals:
 maybes:
   - gametime still passes when idle?
   - generations
+
+pdc builder for sublime text 3:
+https://devforum.play.date/t/build-system-for-sublime-text/987

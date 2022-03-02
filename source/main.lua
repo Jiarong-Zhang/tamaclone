@@ -30,7 +30,7 @@ setup()
 function drawSprite( )
 
 	gfx.drawRoundRect(32, 32, 336, 176, 5)		-- border
-	
+
 
 
 end

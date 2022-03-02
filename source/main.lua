@@ -19,13 +19,25 @@ function setup()
 	sprite:setScale(3);
 	sprite:moveTo( 200,120 )
 	sprite:add()
+
+	gfx.setColor(gfx.kColorBlack)
+	gfx.setLineWidth(3)
 end
 
 setup()
 
+-- draws the static sprites on screen
+function drawSprite( )
+
+	gfx.drawRoundRect(32, 32, 336, 176, 5)		-- border
+	
+
+
+end
+
+
 -- i need the sprite to move left and right randomly
 -- to emulate movement (it's alive!)
-
 
 -- randomly select a movement direction
 -- and randomly choose the movement magnitude
@@ -55,8 +67,8 @@ end
 -- only update sprite location if one seconds has passed
 -- since the last movement event
 local timeSince = 0
-function drawSprite( )
-	
+function movement( )
+
 	local elapsed = playdate.getCurrentTimeMilliseconds()
 
 	if (elapsed - timeSince) < 750 then
@@ -75,5 +87,5 @@ function playdate.update( )
 	gfx.sprite.update();
 	playdate.timer.updateTimers();
 	drawSprite()
-	
+	movement();
 end

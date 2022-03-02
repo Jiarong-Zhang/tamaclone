@@ -28,10 +28,10 @@ setup()
 
 
 -- randomly select a movement direction
--- and shuffle the sprite that way
+-- and randomly choose the movement magnitude
 function shuffle( )
 
-	local rDirection = math.random(0,3)
+	local rDirection = math.random(0,4)
 	local rMagnitude = math.random(1,10)
 	--print(rDirection)
 
@@ -47,20 +47,25 @@ function shuffle( )
 	if rDirection == 3 then
 		sprite.y = sprite.y + rMagnitude
 	end
+	if rDirection == 4 then
+		return
+	end
 end
 
+-- only update sprite location if one seconds has passed
+-- since the last movement event
 local timeSince = 0
 function drawSprite( )
 	
 	local elapsed = playdate.getCurrentTimeMilliseconds()
 
-	if (elapsed - timeSince) < 1000 then
+	if (elapsed - timeSince) < 750 then
 		return
 	end
 
 	shuffle()
-	sprite:moveTo(sprite.x, sprite.y)
-	timeSince = elapsed
+	sprite:moveTo(sprite.x, sprite.y)	-- move sprite
+	timeSince = elapsed		-- update time of last movement event
 end
 
 

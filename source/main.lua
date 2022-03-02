@@ -12,16 +12,29 @@ local sprite = nil
 
 function setup()
 
-	local image = gfx.image.new("images/testSprite")
+	local image = gfx.image.new("images/sprite")
 	assert( image )
 
 	sprite = gfx.sprite.new(image)
-	sprite:setScale(3);
+	sprite:setScale(4);
 	sprite:moveTo( 200,120 )
 	sprite:add()
 
 	gfx.setColor(gfx.kColorBlack)
 	gfx.setLineWidth(3) 
+
+	-- background colour and background image
+	local bg = gfx.image.new("images/bg")
+	assert( bg )
+
+	gfx.setBackgroundColor(gfx.kColorBlack)
+	gfx.sprite.setBackgroundDrawingCallback(
+        function( x, y, width, height )
+            gfx.setScreenClipRect( 32, 32, 336, 176 ) -- let's only draw the part of the screen that's dirty
+            bg:draw( 0, 0 )
+            gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
+        end
+    )
 end
 
 setup()

@@ -5,6 +5,7 @@ goals:
   - hunger, happiness meter
   - feeding
   - pooping
+  - naming
   - time based events i.e. sleep
   - minigames
   - sickness

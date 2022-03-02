@@ -4,6 +4,8 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
+math.randomseed(playdate.getSecondsSinceEpoch())
+
 local gfx <const>  = playdate.graphics
 
 local sprite = nil
@@ -29,21 +31,36 @@ setup()
 -- and shuffle the sprite that way
 function shuffle( )
 
-	local rNum = math.random(0,1);
-	print(rNum)
+	local rDirection = math.random(0,3)
+	local rMagnitude = math.random(1,10)
+	--print(rDirection)
 
-	if rNum  == 0 then
-		sprite.x = sprite.x - 1
+	if rDirection  == 0 then
+		sprite.x = sprite.x - rMagnitude
 	end
-	if rNum == 1 then
-		sprite.x = sprite.x + 1
+	if rDirection == 1 then
+		sprite.x = sprite.x + rMagnitude
+	end
+	if rDirection == 2 then
+		sprite.y = sprite.y - rMagnitude
+	end
+	if rDirection == 3 then
+		sprite.y = sprite.y + rMagnitude
 	end
 end
 
+local timeSince = 0
 function drawSprite( )
+	
+	local elapsed = playdate.getCurrentTimeMilliseconds()
+
+	if (elapsed - timeSince) < 1000 then
+		return
+	end
 
 	shuffle()
 	sprite:moveTo(sprite.x, sprite.y)
+	timeSince = elapsed
 end
 
 

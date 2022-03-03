@@ -9,17 +9,27 @@ math.randomseed(playdate.getSecondsSinceEpoch())
 local gfx <const>  = playdate.graphics
 
 local sprite = nil
+local fullness = nil
+
+local synth = playdate.sound.synth.new(playdate.sound.kWaveSawtooth)
+synth:setADSR(0, 0.1, 0, 0)
 
 function setup()
 
+	-- the little guy
 	local image = gfx.image.new("images/sprite")
 	assert( image )
 
 	sprite = gfx.sprite.new(image)
-	sprite:setScale(4);
-	sprite:moveTo( 200,120 )
+	sprite:setScale(4)
+	sprite:moveTo( 200, 120 )
 	sprite:add()
 
+	-- DEBUG: hunger/happy test
+	fullness = math.random(0,3)
+	print("fullness: ", fullness)
+
+	-- border colour + width in pixels(?)
 	gfx.setColor(gfx.kColorBlack)
 	gfx.setLineWidth(3) 
 
@@ -27,7 +37,7 @@ function setup()
 	local bg = gfx.image.new("images/bg")
 	assert( bg )
 
-	gfx.setBackgroundColor(gfx.kColorBlack)
+	gfx.setBackgroundColor(gfx.kColorWhite)
 	gfx.sprite.setBackgroundDrawingCallback(
         function( x, y, width, height )
             gfx.setScreenClipRect( 32, 32, 336, 176 ) -- let's only draw the part of the screen that's dirty
@@ -43,7 +53,39 @@ setup()
 function drawSprite( )
 
 	gfx.drawRoundRect(32, 32, 336, 176, 5)		-- border
+	statusIcons()
 
+end
+
+-- hunger and happiness icons
+function statusIcons()
+	
+	local empty = gfx.image.new("images/heart-empty")
+	local full = gfx.image.new("images/heart-full")
+
+	local heart1 = gfx.sprite.new(empty)	-- default empty
+	heart1:moveTo( 48, 16 )
+	if fullness >= 1 then
+	 	heart1:setImage(full) 	-- becomes full heart if at least 1 fullness
+	end
+	heart1:setScale(4)
+	heart1:add()
+
+	local heart2 = gfx.sprite.new(empty)
+	heart2:moveTo( 84, 16 )
+	if fullness >= 2 then
+	 	heart2:setImage(full)
+	end
+	heart2:setScale(4)
+	heart2:add()
+
+	local heart3 = gfx.sprite.new(empty)
+	heart3:moveTo( 120, 16 )
+	if fullness == 3 then
+	 	heart3:setImage(full)
+	end
+	heart3:setScale(4)
+	heart3:add()
 end
 
 
@@ -87,7 +129,7 @@ function shuffle( )
 end
 
 -- only update sprite location if one seconds has passed
--- since the last movement event
+-- since the last movement event. runs every frame
 local timeSince = 0
 function movement( )
 
@@ -98,6 +140,12 @@ function movement( )
 		sprite:moveTo(sprite.x, sprite.y)	-- move sprite
 		timeSince = elapsed		-- update time of last movement event
 	end
+
+	-- DEBUG: testing soundssss
+	if playdate.buttonJustPressed("down") == true then
+		synth:playNote(200)
+	end
+
 end
 
 

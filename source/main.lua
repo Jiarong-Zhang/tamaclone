@@ -11,6 +11,8 @@ local gfx <const>  = playdate.graphics
 local sprite = nil
 local fullness = nil
 
+local menuOn = false
+
 local synth = playdate.sound.synth.new(playdate.sound.kWaveSawtooth)
 synth:setADSR(0, 0.1, 0, 0)
 
@@ -52,24 +54,13 @@ function setup()
 
 	-- border colour + width in pixels(?)
 	gfx.setColor(gfx.kColorBlack)
-	gfx.setLineWidth(3) 
+	gfx.setLineWidth(4) 
 
 	-- background colour and background image
 	local bg = gfx.image.new("images/bg")
 	assert( bg )
 
 	gfx.setBackgroundColor(gfx.kColorWhite)
-	-- gfx.sprite.setBackgroundDrawingCallback(
- --        function( x, y, width, height )
- --            gfx.setScreenClipRect( 32, 32, 336, 176 ) -- let's only draw the part of the screen that's dirty
- --            bg:draw( 0, 0 )
- --            gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
- --        end
- --    )
-
- 	-- tilemaps???
- 	-- imageTable = gfx.imagetable.new("images/border")	-- load 
- 	-- print(imageTable:getLength())
 end
 
 setup()
@@ -77,8 +68,13 @@ setup()
 -- draws the static sprites on screen
 function drawSprite( )
 
-	--gfx.drawRoundRect(32, 32, 336, 176, 5)		-- border
+	gfx.drawRoundRect(32, 32, 336, 176, 5)		-- border
 	statusIcons()
+
+	-- menu button icon
+	if menuOn == false then 
+		gfx.drawText("⬇️", 40, 210)
+	end
 end
 
 local borderSize = 3
@@ -121,6 +117,7 @@ function statusIcons()
 	addBlock(32, borderSize+32, borderSize, displayHeight-borderSize*2 - 64)
 	addBlock(displayWidth-borderSize-32, borderSize+32, borderSize, displayHeight-borderSize*2 - 64)
 	addBlock(32, displayHeight-borderSize-32, displayWidth-64, borderSize)
+
 end
 
 
@@ -131,9 +128,6 @@ end
 -- and randomly choose the movement magnitude
 local faceL = true
 function shuffle( )
-
-	--if sprite.x == 64 then return end
-	--if sprite.y == 64 then return end
 
 	local rDirection = math.random(0,4)
 	local rMagnitude = math.random(1,10)
@@ -165,10 +159,8 @@ function shuffle( )
 	if rDirection == 4 then
 		return
 	end
-	--print(faceL)
 
 	sprite:moveWithCollisions(sprite.x + dx, sprite.y + dy);
-
 end
 
 -- only update sprite location if one seconds has passed
@@ -178,25 +170,58 @@ function movement( )
 
 	local elapsed = playdate.getCurrentTimeMilliseconds()
 
-	if (elapsed - timeSince) > 5 then
+	if (elapsed - timeSince) > 750 then
 		shuffle()
 		sprite:moveTo(sprite.x, sprite.y)	-- move sprite
 		timeSince = elapsed		-- update time of last movement event
 	end
 
 	-- DEBUG: testing soundssss
-	if playdate.buttonJustPressed("down") == true then
+	if playdate.buttonJustPressed("down") then
 		synth:playNote(200)
+
+	end
+
+	if playdate.buttonIsPressed("down") then
+		menuOn = true
+		menu()
+	end
+
+	if playdate.buttonJustReleased("down") then
+		menuOn = false
 	end
 
 	-- DEBUG: reset position
 	if playdate.buttonJustPressed("a") == true then
 		sprite:moveTo( 200, 120 )
 	end
-
-
 end
 
+-- use crank to scroll through menu
+-- feed
+-- clean
+-- play
+
+ 
+function menu( )
+	
+	-- how to do a menu that scroll down?
+	gfx.drawText("*menu*", 40, 210)
+
+	gfx.setColor(gfx.kColorBlack)
+	gfx.setLineWidth(3)
+
+	local bar = gfx.image.new(100, 25, gfx.kColorWhite)
+
+	gfx.pushContext(bar)
+	gfx.drawTextInRect("feed \n clean \n play", 5, 5, 100, 25)
+	gfx.popContext()
+
+	bar:draw(100, 210)
+
+	--gfx.drawRect(100, 210, 100, 25)
+	
+end
 
 -- main update function runs every frame (i think?)
 function playdate.update( )
